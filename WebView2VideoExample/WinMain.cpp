@@ -244,7 +244,9 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 										LARGE_INTEGER seek{ streamStart };
 										ULARGE_INTEGER newPosition{ 0 };
 										stream->Seek(seek, STREAM_SEEK_SET, &newPosition);
-										ULARGE_INTEGER chunkSize{ partial ? 1000000 : fullStreamSize };
+										auto remainingSize = fullStreamSize - newPosition.QuadPart;
+										auto partialSize = remainingSize < 1000000 ? remainingSize : 1000000;
+										ULARGE_INTEGER chunkSize{ partial ? partialSize : remainingSize };
 										if (partial) {
 											stream->SetSize(chunkSize);
 										}
